@@ -65,8 +65,9 @@ public class TeamRPK implements Bot {
 	public String getMoveIn (int attackCountryId) {
 		String command = "";
 		// put your code here
-		command = "0";
-		return(command);
+		int numUnits = board.getNumUnits(attackCountryId)/2;
+		command = Integer.toString(numUnits);
+		return command;
 	}
 
 	public String getFortify () {
@@ -75,5 +76,7 @@ public class TeamRPK implements Bot {
 		command = "skip";
 		return(command);
 	}
+
+	
 
 }
