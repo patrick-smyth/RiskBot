@@ -72,8 +72,9 @@ public class TeamRPK implements Bot {
 					toReinforce = friendlyNeighbours.get(i);
 				}
 				if (board.getNumUnits(friendlyNeighbours.get(i)) < board.getNumUnits(lowestUnitsID)) {
-					lowestUnitsID = board.getNumUnits(friendlyNeighbours.get(i));
+					lowestUnitsID = friendlyNeighbours.get(i);
 				}
+
 			}
 		}
 
@@ -116,10 +117,9 @@ public class TeamRPK implements Bot {
 
 
 
-		int random = (int)(Math.random() * owned.size());
 		command = GameData.COUNTRY_NAMES[toReinforce];
 		command = command.replaceAll("\\s", "");
-		command += " "+Integer.toString(player.getNumUnits());
+		command += " "+ player.getNumUnits();
 		return(command);
 	}
 	
@@ -132,8 +132,6 @@ public class TeamRPK implements Bot {
 				}
 			}
 		}
-		System.out.println(otherOwned);
-		System.out.println();
 		int random = (int)(Math.random() * otherOwned.size());
 		command = GameData.COUNTRY_NAMES[otherOwned.get(random)];
 		command = command.replaceAll("\\s", "");
@@ -255,21 +253,51 @@ public class TeamRPK implements Bot {
 		int from = 0;
 		int to = 0;
 
-		boolean canFortify = false;
-		int unitsToDonate = 0;
-		for(int i=0; i<friendlyNeighbours.size()/2; i+=2){
-			if(board.getNumUnits(friendlyNeighbours.get(i)) > board.getNumUnits(friendlyNeighbours.get(i+1))){
-				if(board.getNumUnits(friendlyNeighbours.get(i)) > 2){
-					unitsToDonate = board.getNumUnits(friendlyNeighbours.get(i))/2;
-					from = friendlyNeighbours.get(i);
-					to = friendlyNeighbours.get(i+1);
+		ArrayList<Integer> friendlyNeighbourss = new ArrayList<>();
+		ArrayList<Integer> enemyNeighbours = new ArrayList<>();
 
-					canFortify = true;
+		for(int i=0; i<42;i++) {
+			for(int f: occupiedCountries){
+				if(board.getOccupier(i) != player.getId() && board.isAdjacent(i,f)) {
+					friendlyNeighbourss.add(f);
+					enemyNeighbours.add(i);
 				}
 			}
 		}
+		int difference = 0;
+
+		boolean canFortify = false;
+		int unitsToDonate = 0;
+		for(int i=0;i<friendlyNeighbourss.size();i++){
+			int temp = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
+			if(board.getNumUnits(friendlyNeighbourss.get(i)) < board.getNumUnits(enemyNeighbours.get(i)) &&
+											temp > difference){
+				difference = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
+				for(int j=0; j<friendlyNeighbours.size()/2; j+=2){
+					if(board.getNumUnits(friendlyNeighbours.get(j)) > board.getNumUnits(friendlyNeighbours.get(j+1))){
+						if(board.getNumUnits(friendlyNeighbours.get(j)) > 2){
+							unitsToDonate = board.getNumUnits(friendlyNeighbours.get(j))-1;
+							from = friendlyNeighbours.get(j);
+							to = friendlyNeighbours.get(j+1);
+
+							canFortify = true;
+						}
+					}
+				}
+			}
+		}
+//		for(int i=0; i<friendlyNeighbours.size()/2; i+=2){
+//			if(board.getNumUnits(friendlyNeighbours.get(i)) > board.getNumUnits(friendlyNeighbours.get(i+1))){
+//				if(board.getNumUnits(friendlyNeighbours.get(i)) > 2){
+//					unitsToDonate = board.getNumUnits(friendlyNeighbours.get(i))-1;
+//					from = friendlyNeighbours.get(i);
+//					to = friendlyNeighbours.get(i+1);
+//
+//					canFortify = true;
+//				}
+//			}
+//		}
 		if(canFortify){
-			//command = "skip";
 			command = GameData.COUNTRY_NAMES[from].replaceAll("\\s","") + " " + GameData.COUNTRY_NAMES[to].replaceAll("\\s","") + " " + unitsToDonate;
 		}else{
 			return "skip";
