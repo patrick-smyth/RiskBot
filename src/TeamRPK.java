@@ -1,6 +1,7 @@
 // put your code here
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class TeamRPK implements Bot {
@@ -12,6 +13,13 @@ public class TeamRPK implements Bot {
 	
 	private BoardAPI board;
 	private PlayerAPI player;
+
+	private ArrayList<Integer> canAttack;
+	private ArrayList<Integer> owned = new ArrayList<>();
+	private ArrayList<Integer> otherOwned = new ArrayList<>();
+	private ArrayList<Integer> attackingC;
+
+	public
 	
 	TeamRPK(BoardAPI inBoard, PlayerAPI inPlayer) {
 		board = inBoard;	
@@ -29,8 +37,15 @@ public class TeamRPK implements Bot {
 
 	public String getReinforcement () {
 		String command = "";
-		// put your code here
-		command = GameData.COUNTRY_NAMES[(int)(Math.random() * GameData.NUM_COUNTRIES)];
+		for(int[] c : GameData.CONTINENT_COUNTRIES ){
+			for(int d : c){
+				if(board.getOccupier(d) == player.getId()){
+					owned.add(d);
+				}
+			}
+		}
+		int random = (int)(Math.random() * owned.size());
+		command = GameData.COUNTRY_NAMES[owned.get(random)];
 		command = command.replaceAll("\\s", "");
 		command += " 1";
 		return(command);
@@ -38,23 +53,94 @@ public class TeamRPK implements Bot {
 	
 	public String getPlacement (int forPlayer) {
 		String command = "";
-		// put your code here
-		command = GameData.COUNTRY_NAMES[(int)(Math.random() * GameData.NUM_COUNTRIES)];
+		for(int[] c : GameData.CONTINENT_COUNTRIES ){
+			for(int d : c){
+				if(board.getOccupier(d) == forPlayer){
+					otherOwned.add(d);
+				}
+			}
+		}
+		System.out.println(otherOwned);
+		System.out.println();
+		int random = (int)(Math.random() * otherOwned.size());
+		command = GameData.COUNTRY_NAMES[otherOwned.get(random)];
 		command = command.replaceAll("\\s", "");
 		return(command);
 	}
 	
 	public String getCardExchange () {
 		String command = "";
-		// put your code here
-		command = "skip";
+		command = bestExchange();
+		if(command != "") return command;
+		else {
+			command = "skip";
+		}
 		return(command);
+	}
+
+	public String bestExchange(){
+		ArrayList <Card> cards = player.getCards();
+		int[] botCards = {0,0,0,0};
+		for(Card c : cards){
+			botCards[c.getInsigniaId()] += 1;
+		}
+		if(botCards[0] > 2) return "iii";
+		if(botCards[1] > 2) return "ccc";
+		if(botCards[2] > 2) return "aaa";
+		if(botCards[0] != 0 && botCards[1] != 0 && botCards[2] != 0) return "ica";
+		if(botCards[3] != 0 && botCards[0] > 1) return "iiw";
+		if(botCards[3] != 0 && botCards[1] > 1) return "ccw";
+		if(botCards[3] != 0 && botCards[2] > 1) return "aaw";
+		if(botCards[3] != 0 && botCards[0]+botCards[1] > 1) return "icw";
+		if(botCards[3] != 0 && botCards[0]+botCards[2] > 1) return "iaw";
+		if(botCards[3] != 0 && botCards[1]+botCards[2] > 1) return "acw";
+		if(botCards[3] > 1 && botCards[0] > 0) return "iww";
+		if(botCards[3] > 1 && botCards[1] > 0) return "cww";
+		if(botCards[3] > 1 && botCards[2] > 0) return "aww";
+		if(botCards[3] > 2) return "www";
+		return "";
 	}
 
 	public String getBattle () {
 		String command = "";
-		// put your code here
-		command = "skip";
+		ArrayList<Integer> cAttack = new ArrayList<>();
+		ArrayList<Integer> own = new ArrayList<>();
+		ArrayList<Integer> attackC = new ArrayList<>();
+		attackC.add(99);
+		String Attacking = "";
+		String Attackingfrom = "";
+		for(int c = 0; c<GameData.COUNTRY_NAMES.length; c++){
+			if(board.getOccupier(c) == player.getId()){
+				own.add(c);
+			}
+		}
+		owned = own;
+		attackC.set(0,own.get(0));
+		for(int a=0; a< own.size();a++){
+			for(int i=0;i<42;i++) {
+				if (board.isAdjacent(own.get(a),i) && board.getOccupier(i) != player.getId() &&
+						board.getNumUnits(own.get(a)) > board.getNumUnits(i)){
+					cAttack.add(i);
+					attackC.set(0,own.get(a));
+				}
+//				if(board.isAdjacent(a,i) && board.getNumUnits(i) > board.getNumUnits(attackC.get(0)))
+//					attackC.set(0,i);
+			}
+		}
+
+		if(cAttack.size() == 0) return "skip";
+		for(int i=0;i<42;i++){
+			if(board.isAdjacent(attackC.get(0), i) && board.getOccupier(i) != player.getId()){
+				String attackingfrom = GameData.COUNTRY_NAMES[attackC.get(0)].replaceAll("\\s", "");
+				String attacking = GameData.COUNTRY_NAMES[cAttack.get(cAttack.size()-1)].replaceAll("\\s", "");
+				int units = 1;
+				if(board.getNumUnits(attackC.get(0)) > 3) units = 3;
+				else units = board.getNumUnits(attackC.get(0))-1;
+				command = attackingfrom + " " + attacking + " " + units;
+
+			}
+		}
+		if(command == "") command = "skip";
 		return(command);
 	}
 
@@ -79,7 +165,7 @@ public class TeamRPK implements Bot {
 		ArrayList<Integer> occupiedCountries = new ArrayList<>();
 
 		for(int countryID = 0; countryID < 41; countryID++) {
-			if(board.getOccupier(countryID) == 1) {
+			if(board.getOccupier(countryID) == player.getId()) {
 				occupiedCountries.add(countryID);
 			}
 		}
@@ -104,6 +190,7 @@ public class TeamRPK implements Bot {
 			if(!friendlyNeighbours.isEmpty() && !unitDifferences.isEmpty()) {
 				for(int friendlyID : friendlyNeighbours) {
 					if(board.getNumUnits(friendlyID) > 1) {
+						System.out.println(GameData.COUNTRY_NAMES[friendlyID]);
 						ableToFortify = true;
 						break;
 					}
