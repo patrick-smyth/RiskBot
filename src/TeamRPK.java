@@ -50,62 +50,76 @@ public class TeamRPK implements Bot {
 		ArrayList<Integer> enemyNeighbours = new ArrayList<>();
 
 
-		for(int countryID = 0; countryID < 41; countryID++) {
+		for(int countryID = 0; countryID < 42; countryID++) {
 			if(board.getOccupier(countryID) == player.getId()) {
 				occupiedCountries.add(countryID);
 			}
 		}
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
-				if(board.getOccupier(i) == player.getId() && board.isAdjacent(i,f)) {
+				if(board.getOccupier(i) != player.getId() && board.isAdjacent(i,f)) {
 					friendlyNeighbours.add(f);
-					friendlyNeighbours.add(i);
-				}
-			}
-		}
-
-		int[] hasNeighbour = new int[occupiedCountries.size()];
-		int[] hasEnemyNeighbour = new int[occupiedCountries.size()];
-		for(int i=0;i< occupiedCountries.size();i++){
-			hasNeighbour[i]=0;
-			hasEnemyNeighbour[i]=0;
-		}
-
-		for(int i=0; i< occupiedCountries.size();i++){
-			for(int j=0; j < friendlyNeighbours.size();j++){
-				if(board.isAdjacent(occupiedCountries.get(i), friendlyNeighbours.get(j) )){
-					hasNeighbour[i]+=1;
-				}
-			}
-		}
-
-
-		for(int a=0; a< occupiedCountries.size();a++){
-			for(int i=0;i<42;i++) {
-				if (board.isAdjacent(occupiedCountries.get(a),i) && board.getOccupier(i) != player.getId() &&
-						board.getNumUnits(occupiedCountries.get(a)) > board.getNumUnits(i)){
 					enemyNeighbours.add(i);
-
-				}
-
-			}
-		}
-
-		for(int i=0; i< occupiedCountries.size();i++){
-			for(int j=0; j < friendlyNeighbours.size();j++){
-				if(board.isAdjacent(occupiedCountries.get(i), enemyNeighbours.get(j) )){
-					hasEnemyNeighbour[i]+=1;
 				}
 			}
 		}
+		int lowestUnitsID = occupiedCountries.get(0);
+		int toReinforce = occupiedCountries.get(0);
+		if(friendlyNeighbours.size() != 0) {
+
+			for (int i = 0; i < friendlyNeighbours.size(); i++) {
+				if (board.getNumUnits(friendlyNeighbours.get(i)) < board.getNumUnits(enemyNeighbours.get(i))) {
+					toReinforce = friendlyNeighbours.get(i);
+				}
+				if (board.getNumUnits(friendlyNeighbours.get(i)) < board.getNumUnits(lowestUnitsID)) {
+					lowestUnitsID = board.getNumUnits(friendlyNeighbours.get(i));
+				}
+			}
+		}
+
+
+//		int[] hasNeighbour = new int[occupiedCountries.size()];
+//		int[] hasEnemyNeighbour = new int[occupiedCountries.size()];
+//		for(int i=0;i< occupiedCountries.size();i++){
+//			hasNeighbour[i]=0;
+//			hasEnemyNeighbour[i]=0;
+//		}
+//
+//		for(int i=0; i< occupiedCountries.size();i++){
+//			for(int j=0; j < friendlyNeighbours.size();j++){
+//				if(board.isAdjacent(occupiedCountries.get(i), friendlyNeighbours.get(j) )){
+//					hasNeighbour[i]+=1;
+//				}
+//			}
+//		}
+//
+//
+//		for(int a=0; a< occupiedCountries.size();a++){
+//			for(int i=0;i<42;i++) {
+//				if (board.isAdjacent(occupiedCountries.get(a),i) && board.getOccupier(i) != player.getId() &&
+//						board.getNumUnits(occupiedCountries.get(a)) > board.getNumUnits(i)){
+//					enemyNeighbours.add(i);
+//
+//				}
+//
+//			}
+//		}
+//
+//		for(int i=0; i< occupiedCountries.size();i++){
+//			for(int j=0; j < friendlyNeighbours.size();j++){
+//				if(board.isAdjacent(occupiedCountries.get(i), enemyNeighbours.get(j) )){
+//					hasEnemyNeighbour[i]+=1;
+//				}
+//			}
+//		}
 
 
 
 
 		int random = (int)(Math.random() * owned.size());
-		command = GameData.COUNTRY_NAMES[owned.get(random)];
+		command = GameData.COUNTRY_NAMES[toReinforce];
 		command = command.replaceAll("\\s", "");
-		command += " 1";
+		command += " "+Integer.toString(player.getNumUnits());
 		return(command);
 	}
 	
@@ -336,6 +350,6 @@ public class TeamRPK implements Bot {
 		return(command);
 	}
 
-	
+
 
 }
