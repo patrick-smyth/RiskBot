@@ -193,26 +193,27 @@ public class TeamRPK implements Bot {
 					cAttack.add(i);
 					attackC.set(0,own.get(a));
 				}
-//				if(board.isAdjacent(a,i) && board.getNumUnits(i) > board.getNumUnits(attackC.get(0)))
-//					attackC.set(0,i);
 			}
 		}
 
 		if(cAttack.size() == 0) return "skip";
-		for(int i=0;i<42;i++){
-			if(board.isAdjacent(attackC.get(0), i) && board.getOccupier(i) != player.getId()){
-				String attackingfrom = GameData.COUNTRY_NAMES[attackC.get(0)].replaceAll("\\s", "");
-				String attacking = GameData.COUNTRY_NAMES[cAttack.get(cAttack.size()-1)].replaceAll("\\s", "");
-				int units = 1;
-				if(board.getNumUnits(attackC.get(0)) > 3) units = 3;
-				else units = board.getNumUnits(attackC.get(0))-1;
-				command = attackingfrom + " " + attacking + " " + units;
 
-			}
-		}
+		String attackingfrom = GameData.COUNTRY_NAMES[attackC.get(0)].replaceAll("\\s", "");
+		String attacking = GameData.COUNTRY_NAMES[cAttack.get(cAttack.size() - 1)].replaceAll("\\s", "");
+		int units = 1;
+		if (board.getNumUnits(attackC.get(0)) > 3) units = 3;
+		else units = board.getNumUnits(attackC.get(0)) - 1;
+
+
+		command = attackingfrom + " " + attacking + " " + units;
 		if(command == "") command = "skip";
 		return(command);
 	}
+
+//	public Boolean worthAttack(int a, int b){
+//		if(board.getNumUnits(b) < 3) return true;
+//		return false;
+//	}
 
 	public String getDefence (int countryId) {
 		String command = "";
@@ -224,7 +225,7 @@ public class TeamRPK implements Bot {
 	public String getMoveIn (int attackCountryId) {
 		String command = "";
 		// put your code here
-		int numUnits = board.getNumUnits(attackCountryId)/2;
+		int numUnits = board.getNumUnits(attackCountryId)-1;
 		command = Integer.toString(numUnits);
 		return command;
 	}
