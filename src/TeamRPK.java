@@ -3,7 +3,7 @@
 /*
 TEAM RPK
 
-RISK GAME
+RISK BOT
 By
 Patrick Smyth   - 18347566
 Kamil Michalski - 18469806
@@ -103,7 +103,7 @@ public class TeamRPK implements Bot {
 				}
 			}
 		}
-		int random = (int)(Math.random() * otherOwned.size());
+		int random = (int)(Math.random() * otherOwned.size()); //randomly allocate units to neutral players
 		command = GameData.COUNTRY_NAMES[otherOwned.get(random)];
 		command = command.replaceAll("\\s", "");
 		return(command);
@@ -111,7 +111,7 @@ public class TeamRPK implements Bot {
 	
 	public String getCardExchange () {
 		String command = "";
-		command = bestExchange();
+		command = bestExchange(); //executes bestExchange
 		if(command != "") return command;
 		else {
 			command = "skip";
@@ -123,7 +123,7 @@ public class TeamRPK implements Bot {
 		ArrayList <Card> cards = player.getCards();
 		int[] botCards = {0,0,0,0};
 		for(Card c : cards){
-			botCards[c.getInsigniaId()] += 1;
+			botCards[c.getInsigniaId()] += 1; //adds cards to the
 		}
 		if(botCards[0] > 2) return "iii";
 		if(botCards[1] > 2) return "ccc";
@@ -159,16 +159,18 @@ public class TeamRPK implements Bot {
 		attackC.set(0,own.get(0));
 		for(int a=0; a< own.size();a++){
 			for(int i=0;i<42;i++) {
+				//check all countries against own countries to find adjacent one that isn't the bots
+				//one, and if the units of that adjacent country is lower than the bots
 				if (board.isAdjacent(own.get(a),i) && board.getOccupier(i) != player.getId() &&
 						board.getNumUnits(own.get(a)) > board.getNumUnits(i)){
-					cAttack.add(i);
-					attackC.set(0,own.get(a));
+					cAttack.add(i); //country that is going to get attacked
+					attackC.set(0,own.get(a)); //country that the bot is going to attack with
 				}
 			}
 		}
 
-		if(cAttack.size() == 0) return "skip";
-
+		if(cAttack.size() == 0) return "skip"; //if nothing found return skip
+		
 		String attackingfrom = GameData.COUNTRY_NAMES[attackC.get(0)].replaceAll("\\s", "");
 		String attacking = GameData.COUNTRY_NAMES[cAttack.get(cAttack.size() - 1)].replaceAll("\\s", "");
 		int units = 1;
