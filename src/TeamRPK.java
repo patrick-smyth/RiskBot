@@ -49,7 +49,7 @@ public class TeamRPK implements Bot {
 		String command = "";
 		for(int[] c : GameData.CONTINENT_COUNTRIES ){
 			for(int d : c){
-				if(board.getOccupier(d) == player.getId()){
+				if(board.getOccupier(d) == player.getId()){	//adds your countries to owned
 					owned.add(d);
 				}
 			}
@@ -62,14 +62,14 @@ public class TeamRPK implements Bot {
 
 		for(int countryID = 0; countryID < 42; countryID++) {
 			if(board.getOccupier(countryID) == player.getId()) {
-				occupiedCountries.add(countryID);
+				occupiedCountries.add(countryID);			//adds your countries to occupiedCountries
 			}
 		}
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
 				if(board.getOccupier(i) != player.getId() && board.isAdjacent(i,f)) {
-					friendlyNeighbours.add(f);
-					enemyNeighbours.add(i);
+					friendlyNeighbours.add(f);				//adds our players countries which border an enemy to friendlyNeighbour
+					enemyNeighbours.add(i);					//adds bordering enemy countries to enemyNeighbours
 				}
 			}
 		}
@@ -79,10 +79,10 @@ public class TeamRPK implements Bot {
 
 			for (int i = 0; i < friendlyNeighbours.size(); i++) {
 				if (board.getNumUnits(friendlyNeighbours.get(i)) < board.getNumUnits(enemyNeighbours.get(i))) {
-					toReinforce = friendlyNeighbours.get(i);
+					toReinforce = friendlyNeighbours.get(i);	//finds territory with less units than bordering enemy to reinforce
 				}
 				if (board.getNumUnits(friendlyNeighbours.get(i)) < board.getNumUnits(lowestUnitsID)) {
-					lowestUnitsID = friendlyNeighbours.get(i);
+					lowestUnitsID = friendlyNeighbours.get(i);	//finds our territory with the lowest units that borders an enemy
 				}
 
 			}
