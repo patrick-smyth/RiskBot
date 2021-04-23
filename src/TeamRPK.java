@@ -1,5 +1,15 @@
 // put your code here
 
+/*
+TEAM RPK
+
+RISK GAME
+By
+Patrick Smyth   - 18347566
+Kamil Michalski - 18469806
+Ross Murphy     - 20207271
+ */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
