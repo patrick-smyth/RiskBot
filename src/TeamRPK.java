@@ -204,6 +204,7 @@ public class TeamRPK implements Bot {
 		ArrayList<Integer> occupiedCountries = new ArrayList<>();
 		ArrayList<Integer> friendlyNeighbours = new ArrayList<>();
 
+		//Adds all occupied countries to ArrayList occupiedCountries
 		for(int countryID = 0; countryID < 41; countryID++) {
 			if(board.getOccupier(countryID) == player.getId()) {
 				occupiedCountries.add(countryID);
@@ -213,8 +214,8 @@ public class TeamRPK implements Bot {
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
 				if(board.getOccupier(i) == player.getId() && board.isAdjacent(i,f)) {
-					friendlyNeighbours.add(f);
-					friendlyNeighbours.add(i);
+					friendlyNeighbours.add(f); // adds occupied country to friendlyNeighbours ArrayList
+					friendlyNeighbours.add(i); // adds unoccupied country to friendlyNeighbours ArrayList
 				}
 			}
 		}
@@ -228,8 +229,8 @@ public class TeamRPK implements Bot {
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
 				if(board.getOccupier(i) != player.getId() && board.isAdjacent(i,f)) {
-					friendlyNeighbourss.add(f);
-					enemyNeighbours.add(i);
+					friendlyNeighbourss.add(f); // adds occupied country to friendlyNeighbourss ArrayList
+					enemyNeighbours.add(i); // adds unoccupied country to enemyNeighbours
 				}
 			}
 		}
@@ -238,14 +239,14 @@ public class TeamRPK implements Bot {
 		boolean canFortify = false;
 		int unitsToDonate = 0;
 		for(int i=0;i<friendlyNeighbourss.size();i++){
-			int temp = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
+			int temp = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i)); // subtracts enemyNeighbour's units from bot's friendlyNeighbour
 			if(board.getNumUnits(friendlyNeighbourss.get(i)) < board.getNumUnits(enemyNeighbours.get(i)) &&
 											temp > difference){
 				difference = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
 				for(int j=0; j<friendlyNeighbours.size()/2; j+=2){
 					if(board.getNumUnits(friendlyNeighbours.get(j)) > board.getNumUnits(friendlyNeighbours.get(j+1))){
-						if(board.getNumUnits(friendlyNeighbours.get(j)) > 2){
-							unitsToDonate = board.getNumUnits(friendlyNeighbours.get(j))-1;
+						if(board.getNumUnits(friendlyNeighbours.get(j)) > 2){ // If this country has more than 2 units
+							unitsToDonate = board.getNumUnits(friendlyNeighbours.get(j))-1; //unitsToDonate set to all of the country's units minus 1
 							from = friendlyNeighbours.get(j);
 							to = friendlyNeighbours.get(j+1);
 
