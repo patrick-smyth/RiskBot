@@ -3,11 +3,12 @@
 /*
 TEAM RPK
 
-RISK BOT
+RISK GAME
 By
 Patrick Smyth   - 18347566
 Kamil Michalski - 18469806
 Ross Murphy     - 20207271
+pog
  */
 
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class TeamRPK implements Bot {
 				}
 			}
 		}
-		int random = (int)(Math.random() * otherOwned.size()); //randomly allocate units to neutral players
+		int random = (int)(Math.random() * otherOwned.size());
 		command = GameData.COUNTRY_NAMES[otherOwned.get(random)];
 		command = command.replaceAll("\\s", "");
 		return(command);
@@ -111,7 +112,7 @@ public class TeamRPK implements Bot {
 	
 	public String getCardExchange () {
 		String command = "";
-		command = bestExchange(); //executes bestExchange
+		command = bestExchange();
 		if(command != "") return command;
 		else {
 			command = "skip";
@@ -123,7 +124,7 @@ public class TeamRPK implements Bot {
 		ArrayList <Card> cards = player.getCards();
 		int[] botCards = {0,0,0,0};
 		for(Card c : cards){
-			botCards[c.getInsigniaId()] += 1; //adds cards to the
+			botCards[c.getInsigniaId()] += 1;
 		}
 		if(botCards[0] > 2) return "iii";
 		if(botCards[1] > 2) return "ccc";
@@ -159,18 +160,16 @@ public class TeamRPK implements Bot {
 		attackC.set(0,own.get(0));
 		for(int a=0; a< own.size();a++){
 			for(int i=0;i<42;i++) {
-				//check all countries against own countries to find adjacent one that isn't the bots
-				//one, and if the units of that adjacent country is lower than the bots
 				if (board.isAdjacent(own.get(a),i) && board.getOccupier(i) != player.getId() &&
 						board.getNumUnits(own.get(a)) > board.getNumUnits(i)){
-					cAttack.add(i); //country that is going to get attacked
-					attackC.set(0,own.get(a)); //country that the bot is going to attack with
+					cAttack.add(i);
+					attackC.set(0,own.get(a));
 				}
 			}
 		}
 
-		if(cAttack.size() == 0) return "skip"; //if nothing found return skip
-		
+		if(cAttack.size() == 0) return "skip";
+
 		String attackingfrom = GameData.COUNTRY_NAMES[attackC.get(0)].replaceAll("\\s", "");
 		String attacking = GameData.COUNTRY_NAMES[cAttack.get(cAttack.size() - 1)].replaceAll("\\s", "");
 		int units = 1;
@@ -204,7 +203,6 @@ public class TeamRPK implements Bot {
 		ArrayList<Integer> occupiedCountries = new ArrayList<>();
 		ArrayList<Integer> friendlyNeighbours = new ArrayList<>();
 
-		//Adds all occupied countries to ArrayList occupiedCountries
 		for(int countryID = 0; countryID < 41; countryID++) {
 			if(board.getOccupier(countryID) == player.getId()) {
 				occupiedCountries.add(countryID);
@@ -214,8 +212,8 @@ public class TeamRPK implements Bot {
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
 				if(board.getOccupier(i) == player.getId() && board.isAdjacent(i,f)) {
-					friendlyNeighbours.add(f); // adds occupied country to friendlyNeighbours ArrayList
-					friendlyNeighbours.add(i); // adds unoccupied country to friendlyNeighbours ArrayList
+					friendlyNeighbours.add(f);
+					friendlyNeighbours.add(i);
 				}
 			}
 		}
@@ -229,8 +227,8 @@ public class TeamRPK implements Bot {
 		for(int i=0; i<42;i++) {
 			for(int f: occupiedCountries){
 				if(board.getOccupier(i) != player.getId() && board.isAdjacent(i,f)) {
-					friendlyNeighbourss.add(f); // adds occupied country to friendlyNeighbourss ArrayList
-					enemyNeighbours.add(i); // adds unoccupied country to enemyNeighbours
+					friendlyNeighbourss.add(f);
+					enemyNeighbours.add(i);
 				}
 			}
 		}
@@ -239,14 +237,14 @@ public class TeamRPK implements Bot {
 		boolean canFortify = false;
 		int unitsToDonate = 0;
 		for(int i=0;i<friendlyNeighbourss.size();i++){
-			int temp = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i)); // subtracts enemyNeighbour's units from bot's friendlyNeighbour
+			int temp = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
 			if(board.getNumUnits(friendlyNeighbourss.get(i)) < board.getNumUnits(enemyNeighbours.get(i)) &&
 											temp > difference){
 				difference = board.getNumUnits(enemyNeighbours.get(i)) - board.getNumUnits(friendlyNeighbourss.get(i));
 				for(int j=0; j<friendlyNeighbours.size()/2; j+=2){
 					if(board.getNumUnits(friendlyNeighbours.get(j)) > board.getNumUnits(friendlyNeighbours.get(j+1))){
-						if(board.getNumUnits(friendlyNeighbours.get(j)) > 2){ // If this country has more than 2 units
-							unitsToDonate = board.getNumUnits(friendlyNeighbours.get(j))-1; //unitsToDonate set to all of the country's units minus 1
+						if(board.getNumUnits(friendlyNeighbours.get(j)) > 2){
+							unitsToDonate = board.getNumUnits(friendlyNeighbours.get(j))-1;
 							from = friendlyNeighbours.get(j);
 							to = friendlyNeighbours.get(j+1);
 
